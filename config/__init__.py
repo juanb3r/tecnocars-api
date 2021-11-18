@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from config import routers
 
+
 app = FastAPI(
     title="Tecnocars API services",
     description="API services for Tecnocars",
