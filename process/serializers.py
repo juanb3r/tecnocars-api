@@ -8,7 +8,7 @@ class UserLoginModel(BaseModel):
     class Config:
         schema_extra = {
             "example": {
-                "username": "Foo",
+                "username": "drmamapa@hotmail.com",
                 "password": "Senha.1500"
             }
         }
@@ -24,8 +24,8 @@ class UserModel(BaseModel):
         schema_extra = {
             "example": {
                 "name": "laura",
-                "username": "Sedjjs@hotmail.com",
-                "password": "Foodfd.d",
+                "username": "drmamapa@hotmail.com",
+                "password": "Senha.1500",
                 "access": False
             }
         }

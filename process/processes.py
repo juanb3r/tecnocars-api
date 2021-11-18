@@ -1,11 +1,13 @@
-from process.db_queries import UserQuery
 import hashlib
+import json
+
+from process.db_queries import UserQuery
+
 
 user_query = UserQuery()
 
 
 def create_user_process(user):
-    # todo si existe el usuario lo crea sino nooo
     hashed_password = hashlib.md5(user.password.encode())
     user.password = hashed_password.hexdigest()
     return user_query.new_user_tb(user)
