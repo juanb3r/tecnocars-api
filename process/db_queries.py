@@ -4,29 +4,48 @@ from process.models import Users
 
 class UserQuery():
 
-    def __init__(self) -> None:
+    def __init__(self):
         self.session = session
 
-    def show_users_tb(self):
+    def show_users_tb(self) -> dict:
         try:
             users = self.session.query(Users).all()
-            return users
-        except Exception:
-            return {"data": "error"}
+            return {"data": {"users": users}}
+        except Exception as error:
+            return {"data": {"error": error}}
 
-    def get_user_login_tb(self, username: str, password: str):
+    def get_user_login_tb(self, username: str, password: str) -> dict:
+        """
+        Login del usuario
+
+        Args:
+            username (str): correo
+            password (str): clave del usurio
+
+        Returns:
+            dict: Respuesta
+        """
         try:
             user = self.session.query(Users).filter_by(
                 username=username,
                 password=password).one()
         except Exception:
             self.session.rollback()
-            return {"data": "Verifique los datos"}
+            return {"data": {"message": "Verifique los datos"}}
         finally:
             self.session.close()
-        return user
+        return {"data": {"user": user}}
 
-    def new_user_tb(self, user):
+    def new_user_tb(self, user: object) -> dict:
+        """
+        Creacion del usuario
+
+        Args:
+            user (object): Datos del usuario, nombre, correo, contraseña
+
+        Returns:
+            dict: Respuesta
+        """
         try:
             query_user = self.session.query(Users).filter_by(
                 username=user.username).count()
@@ -40,28 +59,28 @@ class UserQuery():
                 self.session.add(new_user)
                 self.session.commit()
                 self.session.close()
-                return {"data": "El usuario fue creado"}
+                return {"data": {"message": "El usuario fue creado"}}
             elif(query_user >= 1):
                 self.session.close()
-                return {"data": "El usuario ya existe"}
+                return {"data": {"message": "El usuario ya existe"}}
             else:
                 self.session.close()
-                return {"data": "Correo erroneo"}
+                return {"data": {"message": "Correo erroneo"}}
 
-        except Exception:
+        except Exception as error:
             self.session.rollback()
             self.session.close()
-            return {"data": "Error"}
+            return {"data": {"Error": error}}
 
-    def edit_user_tb(self, user):
+    def edit_user_tb(self, user: object) -> dict:
         self.session.add(user)
         self.session.commit()
         self.session.close()
-        return True
+        return {"data": {"message": "El usuario fue editado"}}
 
-    def delete_user_tb(self, id):
+    def delete_user_tb(self, id) -> dict:
         user = self.get_user_by_id_tb(id)
         self.session.delete(user)
         self.session.commit()
         self.session.close()
-        return True
+        return {"data": {"message": "El usuario fue borrado"}}

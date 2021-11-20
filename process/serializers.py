@@ -31,6 +31,17 @@ class UserModel(BaseModel):
         }
 
 
+class UserResponseModel(BaseModel):
+    data: dict
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "data": {"message": "Exitoso"}
+            }
+        }
+
+
 class ClientCreate(BaseModel):
     empresa: str
     placa_empresa: str
