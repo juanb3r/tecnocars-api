@@ -1,9 +1,12 @@
 import logging
 from fastapi import APIRouter
-from process.handlers import create_user_handler, user_login_handler
+from fastapi.datastructures import UploadFile
+from fastapi.params import File
+from process.handlers import create_user_handler, user_login_handler,\
+    create_client_handler, upload_file_handler
 
-from process.serializers import ClientCreate, UserLoginModel, UserModel,\
-    UserResponseModel
+from process.serializers import ClientCreateModel, UserLoginModel,\
+    UserCreateModel, ResponseModel
 
 
 router = APIRouter()
@@ -13,7 +16,7 @@ logger = logging.getLogger("router")
 @router.get("/")
 async def root():
     """
-    Verificar que la app esta muncionando
+    Verificar que la app esta funcionando
 
     Returns:
         [dict]: Hello World
@@ -21,7 +24,7 @@ async def root():
     return {"message": "Hello World"}
 
 
-@router.post("/user", tags=["user"], response_model=UserResponseModel)
+@router.post("/user", tags=["user"], response_model=ResponseModel)
 async def login_user(user: UserLoginModel) -> dict:
     """
     El usuario debe loguearse en la app,
@@ -39,8 +42,8 @@ async def login_user(user: UserLoginModel) -> dict:
     return user_login_handler(user)
 
 
-@router.post("/create-user", tags=["user"])
-async def create_user(user: UserModel) -> dict:
+@router.post("/create-user", tags=["user"], response_model=ResponseModel)
+async def create_user(user: UserCreateModel) -> dict:
     """
     Creacion del usurio con sus datos nombre, correo, clave
 
@@ -56,6 +59,11 @@ async def create_user(user: UserModel) -> dict:
     return create_user_handler(user)
 
 
-@router.post("/client", tags=["client"])
-async def login_client(client: ClientCreate):
-    return {"client": client}
+@router.post("/create-client", tags=["client"], response_model=ResponseModel)
+async def create_client(client: ClientCreateModel) -> dict:
+    return create_client_handler(client)
+
+
+@router.post("/upload", tags=["Upload"], response_model=ResponseModel)
+async def upload_file(file: UploadFile = File(...)) -> dict:
+    return upload_file_handler(file)

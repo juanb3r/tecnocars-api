@@ -1,5 +1,5 @@
 from sqlalchemy import Boolean, Column,\
-    Integer, String, Date, DateTime
+    Integer, String, Date
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 
@@ -17,23 +17,22 @@ class Users(Base):
     access = Column("permisos", Boolean, default=False)
 
 
-class Client():
+class Client(Base):
     __tablename__ = "revisiones"
 
     id = Column(Integer, primary_key=True, index=True)
-    empresa = Column(String, index=True)
+    empresa = Column(String, unique=True, index=True)
     placa_empresa = Column("placaEmpresa", String, index=True)
     placa = Column(String, index=True)
     bimensual = Column(Date)
     soat = Column(Date)
     tecnomecanica = Column(Date)
     poliza = Column(Date)
-    bimensual = Column(Date)
-    archivo = Column(Date)
-    archivo2 = Column(Date)
-    fecha_registro = Column(DateTime)
+    archivo = Column(String)
+    archivo_2 = Column("archivo2", String)
+    fecha_registro = Column(Date)
     aprobado = Column(Boolean, default=False)
 
 
-engine = create_engine("sqlite:///tecnocars.db", echo=True)
+engine = create_engine("sqlite:///tecnocars.db")
 Base.metadata.create_all(engine)

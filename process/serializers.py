@@ -1,3 +1,4 @@
+from datetime import date
 from pydantic import BaseModel
 
 
@@ -14,7 +15,7 @@ class UserLoginModel(BaseModel):
         }
 
 
-class UserModel(BaseModel):
+class UserCreateModel(BaseModel):
     name: str
     username: str
     password: str
@@ -23,7 +24,7 @@ class UserModel(BaseModel):
     class Config:
         schema_extra = {
             "example": {
-                "name": "laura",
+                "name": "Laura en America",
                 "username": "drmamapa@hotmail.com",
                 "password": "Senha.1500",
                 "access": False
@@ -31,7 +32,7 @@ class UserModel(BaseModel):
         }
 
 
-class UserResponseModel(BaseModel):
+class ResponseModel(BaseModel):
     data: dict
 
     class Config:
@@ -42,19 +43,18 @@ class UserResponseModel(BaseModel):
         }
 
 
-class ClientCreate(BaseModel):
+class ClientCreateModel(BaseModel):
     empresa: str
     placa_empresa: str
     placa: str
-    bimensual: str
-    soat: str
-    tecnomecanica: str
-    poliza: str
-    bimensual: str
+    bimensual: date
+    soat: date
+    tecnomecanica: date
+    poliza: date
     archivo: str
-    archivo2: str
-    fecha_registro: str
-    aprobado: str
+    archivo_2: str
+    fecha_registro: date
+    aprobado: bool
 
     class Config:
         schema_extra = {
@@ -62,14 +62,13 @@ class ClientCreate(BaseModel):
                 "empresa": "jeltes",
                 "placa_empresa": "HHH",
                 "placa": "SDF453",
-                "bimensual": "11/5/2002",
-                "soat": "12/7/2002",
-                "tecnomecanica": "10/10/2021",
-                "poliza": "10/1/2021",
-                "bimensual": "11/8/2021",
-                "archivo": "",
-                "archivo2": "",
-                "fecha_registro": "10/8/2020",
-                "aprobado": "True",
+                "bimensual": "2021-09-30",
+                "soat": "2002-12-7",
+                "tecnomecanica": "2021-10-10",
+                "poliza": "2021-10-1",
+                "archivo": "f",
+                "archivo_2": "f",
+                "fecha_registro": "2020-10-8",
+                "aprobado": False
             }
         }

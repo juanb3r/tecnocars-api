@@ -1,5 +1,5 @@
 from config.db_connection import session
-from process.models import Users
+from process.models import Users, Client
 
 
 class UserQuery():
@@ -81,6 +81,62 @@ class UserQuery():
     def delete_user_tb(self, id) -> dict:
         user = self.get_user_by_id_tb(id)
         self.session.delete(user)
+        self.session.commit()
+        self.session.close()
+        return {"data": {"message": "El usuario fue borrado"}}
+
+
+class ClientQuery():
+
+    def __init__(self):
+        self.session = session
+
+    def show_clients_tb(self) -> dict:
+        try:
+            clients = self.session.query(Client).all()
+            return {"data": {"clients": clients}}
+        except Exception as error:
+            return {"data": {"error": error}}
+
+    def new_client_tb(self, client: object) -> dict:
+        try:
+            query_client = self.session.query(Client).filter_by(
+                empresa=client.empresa).count()
+            if (query_client != 1):
+                new_client = Client(
+                    empresa=client.empresa,
+                    placa_empresa=client.placa_empresa,
+                    placa=client.placa,
+                    bimensual=client.bimensual,
+                    soat=client.soat,
+                    tecnomecanica=client.tecnomecanica,
+                    poliza=client.poliza,
+                    archivo=client.archivo,
+                    archivo_2=client.archivo_2,
+                    fecha_registro=client.fecha_registro,
+                    aprobado=client.aprobado)
+                self.session.add(new_client)
+                self.session.commit()
+                self.session.close()
+                return {"data": {"message": "El cliente fue creado"}}
+            else:
+                self.session.close()
+                return {"data": {"message": "El cliente ya existe"}}
+
+        except Exception as error:
+            self.session.rollback()
+            self.session.close()
+            return {"data": {"Error": error}}
+
+    def edit_client_tb(self, client: object) -> dict:
+        self.session.add(client)
+        self.session.commit()
+        self.session.close()
+        return {"data": {"message": "El cliente fue editado"}}
+
+    def delete_client_tb(self, id) -> dict:
+        client = self.get_user_by_id_tb(id)
+        self.session.delete(client)
         self.session.commit()
         self.session.close()
         return {"data": {"message": "El usuario fue borrado"}}
