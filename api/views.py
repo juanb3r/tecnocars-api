@@ -1,6 +1,6 @@
 import logging
 from fastapi import APIRouter
-from fastapi.datastructures import UploadFile
+# from fastapi.datastructures import UploadFile
 from fastapi.params import File
 from process.handlers import create_user_handler, user_login_handler,\
     create_client_handler, upload_file_handler
@@ -14,7 +14,7 @@ logger = logging.getLogger("router")
 
 
 @router.get("/")
-async def root():
+async def root() -> dict:
     """
     Verificar que la app esta funcionando
 
@@ -64,6 +64,6 @@ async def create_client(client: ClientCreateModel) -> dict:
     return create_client_handler(client)
 
 
-@router.post("/upload", tags=["Upload"], response_model=ResponseModel)
-async def upload_file(file: UploadFile = File(...)) -> dict:
+@router.post("/create-upload", tags=["upload"], response_model=ResponseModel)
+async def create_upload_file(file: bytes = File(...)) -> dict:
     return upload_file_handler(file)

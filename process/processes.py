@@ -1,6 +1,7 @@
 from process.db_queries import UserQuery, ClientQuery
 from process.utils import hash_md5_utils
-from os import getcwd
+import os
+import pathlib
 
 user_query = UserQuery()
 client_query = ClientQuery()
@@ -21,8 +22,13 @@ def create_client_process(client):
 
 
 def upload_file_process(file):
-    with open(getcwd() + "/" + file.filename, "wb") as newfile:
-        content = file.read()
-        newfile.write(content)
-        newfile.close()
-    return {"data": {"message": "Archivo subido"}}
+
+    try:
+        route = "carpeta"
+        os.mkdir("carpeta")
+        f = open(route+"/prueba.jpg", "wb")
+        f.write(file)
+        f.close()
+        return {"data": {"message": "Archivo subido"}}
+    except Exception as error:
+        return {"data": {"erorr": f"{error}"}}

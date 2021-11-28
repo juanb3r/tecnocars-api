@@ -96,7 +96,7 @@ class ClientQuery():
             clients = self.session.query(Client).all()
             return {"data": {"clients": clients}}
         except Exception as error:
-            return {"data": {"error": error}}
+            return {"data": {"erorr": f"{error}"}}
 
     def new_client_tb(self, client: object) -> dict:
         try:
@@ -126,7 +126,7 @@ class ClientQuery():
         except Exception as error:
             self.session.rollback()
             self.session.close()
-            return {"data": {"Error": error}}
+            return {"data": {"erorr": f"{error}"}}
 
     def edit_client_tb(self, client: object) -> dict:
         self.session.add(client)
