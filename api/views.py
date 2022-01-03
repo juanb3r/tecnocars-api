@@ -1,9 +1,10 @@
 import logging
 from fastapi import APIRouter
 # from fastapi.datastructures import UploadFile
-from fastapi.params import File
+from fastapi.params import File, Form
 from process.handlers import create_user_handler, user_login_handler,\
-    create_client_handler, upload_file_handler
+    create_client_handler, upload_file_handler, edit_client_handler,\
+    delete_client_handler, show_client_handler
 
 from process.serializers import ClientCreateModel, UserLoginModel,\
     UserCreateModel, ResponseModel
@@ -60,10 +61,40 @@ async def create_user(user: UserCreateModel) -> dict:
 
 
 @router.post("/create-client", tags=["client"], response_model=ResponseModel)
-async def create_client(client: ClientCreateModel) -> dict:
+async def create_client(
+        client: ClientCreateModel
+                    ) -> dict:
     return create_client_handler(client)
 
 
+@router.put("/edit-client", tags=["client"], response_model=ResponseModel)
+async def edit_client(
+    client: ClientCreateModel,
+    number_id: int
+) -> dict:
+    return edit_client_handler(client, number_id)
+
+
+@router.delete(
+    "/delete-client/{delete_id}",
+    tags=["client"],
+    response_model=ResponseModel)
+async def delete_client(delete_id: int) -> dict:
+    return delete_client_handler(delete_id)
+
+
+@router.get("/show-client", tags=["client"], response_model=ResponseModel)
+async def show_client() -> dict:
+    return show_client_handler()
+
+
 @router.post("/create-upload", tags=["upload"], response_model=ResponseModel)
-async def create_upload_file(file: bytes = File(...)) -> dict:
-    return upload_file_handler(file)
+async def create_upload_file(
+    preventive_review: bytes = File(...),
+    corrective_sheet: bytes = File(...),
+    date_id_register: str = Form(...)
+        ) -> dict:
+    return upload_file_handler(
+        preventive_review,
+        corrective_sheet,
+        date_id_register)

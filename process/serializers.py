@@ -51,8 +51,6 @@ class ClientCreateModel(BaseModel):
     soat: date
     tecnomecanica: date
     poliza: date
-    archivo: str
-    archivo_2: str
     fecha_registro: date
     aprobado: bool
 
@@ -66,8 +64,6 @@ class ClientCreateModel(BaseModel):
                 "soat": "2002-12-7",
                 "tecnomecanica": "2021-10-10",
                 "poliza": "2021-10-1",
-                "archivo": "f",
-                "archivo_2": "f",
                 "fecha_registro": "2020-10-8",
                 "aprobado": False
             }

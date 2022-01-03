@@ -21,7 +21,8 @@ class Client(Base):
     __tablename__ = "revisiones"
 
     id = Column(Integer, primary_key=True, index=True)
-    empresa = Column(String, unique=True, index=True)
+    id_register = Column(String, unique=True, index=True)
+    empresa = Column(String, index=True)
     placa_empresa = Column("placaEmpresa", String, index=True)
     placa = Column(String, index=True)
     bimensual = Column(Date)
