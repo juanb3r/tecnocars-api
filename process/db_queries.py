@@ -4,17 +4,17 @@ from process.models import Users, Client
 from process.utils import delete_client_util
 
 
-class Section():
+class Session():
 
     def __init__(self):
         self.session = session
 
-    def login_section(self, username: str, password: str) -> dict:
+    def login_session(self, username: str, password: str) -> dict:
         user = self.session.query(Users).filter_by(
                     username=username,
                     password=password).one()
-        section_login: dict = {"user": user, "value": True}
-        return section_login
+        session_login: dict = {"user": user, "value": True}
+        return session_login
 
 
 class UserQuery():
@@ -23,6 +23,8 @@ class UserQuery():
         self.session = session
 
     def show_users(self) -> dict:
+        # if self.session_login["value"]:
+
         try:
             users = self.session.query(Users).all()
             return {"data": {"users": users}}
@@ -41,13 +43,13 @@ class UserQuery():
             dict: Respuesta
         """
         try:
-            section_login = Section().login_section(username, password)
+            session_login = Session().login_session(username, password)
         except Exception:
             self.session.rollback()
             return {"data": {"message": "Verifique los datos"}}
         finally:
             self.session.close()
-        return {"data": section_login}
+        return {"data": session_login}
 
     def new_user(self, user: object) -> dict:
         """

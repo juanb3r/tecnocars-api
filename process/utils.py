@@ -71,3 +71,9 @@ def create_path_util(
 
     except Exception:
         return {"data": {"message": "Error al subir los archivos"}}
+
+
+class SessionManager:
+    def __init__(self) -> None:
+        self.user = {}
+        self.value = False

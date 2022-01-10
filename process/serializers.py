@@ -41,7 +41,8 @@ class ResponseModel(BaseModel):
                 "data": {"message": "Exitoso"}
             }
         }
-
+#todo status code para todos, data y mensaje
+# https://developer.mozilla.org/es/docs/Web/HTTP/Status
 
 class ClientCreateModel(BaseModel):
     empresa: str

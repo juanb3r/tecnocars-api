@@ -4,7 +4,7 @@ from fastapi import APIRouter
 from fastapi.params import File, Form
 from process.handlers import create_user_handler, user_login_handler,\
     create_client_handler, upload_file_handler, edit_client_handler,\
-    delete_client_handler, show_client_handler
+    delete_client_handler, show_client_handler, user_closed_session_handler
 
 from process.serializers import ClientCreateModel, UserLoginModel,\
     UserCreateModel, ResponseModel
@@ -41,6 +41,11 @@ async def login_user(user: UserLoginModel) -> dict:
 
     """
     return user_login_handler(user)
+
+
+@router.post("/close-session", response_model=ResponseModel)
+async def close_session() -> dict:
+    return user_closed_session_handler()
 
 
 @router.post("/create-user", tags=["user"], response_model=ResponseModel)

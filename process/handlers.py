@@ -1,10 +1,14 @@
 from process.processes import create_user_process, user_login_process,\
     create_client_process, upload_file_process, edit_client_process,\
-    delete_client_process, show_client_process
+    delete_client_process, show_client_process, user_close_session_process
 
 
 def user_login_handler(user: object) -> dict:
     return user_login_process(user)
+
+
+def user_closed_session_handler() -> dict:
+    return user_close_session_process()
 
 
 def create_user_handler(user: object) -> dict:
