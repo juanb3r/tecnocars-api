@@ -43,7 +43,7 @@ async def login_user(user: UserLoginModel) -> dict:
     return user_login_handler(user)
 
 
-@router.post("/close-session", response_model=ResponseModel)
+@router.post("/close-session", tags=["user"], response_model=ResponseModel)
 async def close_session() -> dict:
     return user_closed_session_handler()
 
