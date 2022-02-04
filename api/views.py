@@ -1,10 +1,10 @@
 import logging
 from fastapi import APIRouter
-# from fastapi.datastructures import UploadFile
 from fastapi.params import File, Form
 from process.handlers import create_user_handler, user_login_handler,\
     create_client_handler, upload_file_handler, edit_client_handler,\
-    delete_client_handler, show_client_handler, user_closed_session_handler
+    delete_client_handler, show_client_handler, user_closed_session_handler,\
+    edit_user_handler, delete_user_handler, show_user_handler
 
 from process.serializers import ClientCreateModel, UserLoginModel,\
     UserCreateModel, ResponseModel
@@ -63,6 +63,27 @@ async def create_user(user: UserCreateModel) -> dict:
                 usuario existente, 3) correo no valido
     """
     return create_user_handler(user)
+
+
+@router.put("/edit-user", tags=["user"], response_model=ResponseModel)
+async def edit_user(
+    user: UserCreateModel,
+    number_id: int
+) -> dict:
+    return edit_user_handler(user, number_id)
+
+
+@router.delete(
+    "/delete-user/{delete_id}",
+    tags=["user"],
+    response_model=ResponseModel)
+async def delete_user(delete_id: int) -> dict:
+    return delete_user_handler(delete_id)
+
+
+@router.get("/show-user", tags=["user"], response_model=ResponseModel)
+async def show_user() -> dict:
+    return show_user_handler()
 
 
 @router.post("/create-client", tags=["client"], response_model=ResponseModel)

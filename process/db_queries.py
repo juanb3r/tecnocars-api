@@ -23,8 +23,6 @@ class UserQuery():
         self.session = session
 
     def show_users(self) -> dict:
-        # if self.session_login["value"]:
-
         try:
             users = self.session.query(Users).all()
             return {"data": {"users": users}}
@@ -64,7 +62,6 @@ class UserQuery():
         try:
             query_user = self.session.query(Users).filter_by(
                 username=user.username).count()
-# todo verificar que el usuario sea super usuario "tecnocars para crear los usuarios" 
             if (query_user != 1 and len(user.username) > 5 and
                     (user.username).count("@") == 1):
                 new_user = Users(
@@ -88,18 +85,37 @@ class UserQuery():
             self.session.close()
             return {"data": {"Error": error}}
 
-    def edit_user(self, user: object) -> dict:
-        self.session.add(user)
-        self.session.commit()
-        self.session.close()
-        return {"data": {"message": "El usuario fue editado"}}
+    def edit_user(self, user: object, number_id) -> dict:
+        try:
+            edit_user: Users = self.session.query(Users).filter_by(
+                id=number_id).one()
+            edit_user.name = user.name
+            edit_user.password = user.password
+            edit_user.access = user.access
+            edit_user.username = user.username
 
-    def delete_user(self, id) -> dict:
-        user = self.get_user_by_id_tb(id)
-        self.session.delete(user)
-        self.session.commit()
-        self.session.close()
-        return {"data": {"message": "El usuario fue borrado"}}
+            self.session.add(edit_user)
+            self.session.commit()
+            self.session.close()
+            return {"data": {"message": "El usuario fue editado"}}
+        except Exception as error:
+            self.session.rollback()
+            self.session.close()
+            return {"data": {"erorr": f"{error}"}}
+
+    def delete_user(self, number_id) -> dict:
+        try:
+            delete_user: Users = self.session.query(Users).filter_by(
+                id=number_id).one()
+            self.session.delete(delete_user)
+            self.session.commit()
+            self.session.close()
+            return {"data": {"message": "El usuario fue borrado"}}
+        except Exception as error:
+            self.session.rollback()
+            self.session.close()
+            return {"data": {"erorr": f"{error}"}}
+
 
 
 class ClientQuery():
