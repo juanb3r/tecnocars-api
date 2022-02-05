@@ -36,7 +36,7 @@ async def login_user(user: UserLoginModel) -> dict:
 
     Returns:
         dict:
-            Respuesta de la petición 1) datos del usuario
+            Respuesta de la petición 1) datos del usuario, inicio de sesión
             o 2) verificar datos, correo o clave erronea
 
     """
@@ -45,22 +45,35 @@ async def login_user(user: UserLoginModel) -> dict:
 
 @router.post("/close-session", tags=["user"], response_model=ResponseModel)
 async def close_session() -> dict:
+    """
+    Cerramos la sesión del usuario
+
+    Returns:
+        dict: {"data": {"message": }}
+        1. Sesión cerrada
+        2. Usuario no ha iniciado sesión
+    """
     return user_closed_session_handler()
 
 
 @router.post("/create-user", tags=["user"], response_model=ResponseModel)
 async def create_user(user: UserCreateModel) -> dict:
     """
-    Creacion del usurio con sus datos nombre, correo, clave
+    Creacion del usurio con sus datos nombre, correo, clave, access
 
     Args:
         user (UserModel): 1) name: str  2) username: str
             3) password: str    4) access: bool
 
     Returns:
-        dict:
-            Respuesta de la petición 1) usuario creado, 2)
-                usuario existente, 3) correo no valido
+        dict: {"data": {"message": }}
+            Respuesta de la petición
+            1. El usuario fue creado
+            2. El usuario ya existe
+            3. Correo erroneo
+            4. Usuario no ha iniciado sesión
+            5. El usuario no puede hacer esta acción
+            6. Error
     """
     return create_user_handler(user)
 
@@ -70,6 +83,25 @@ async def edit_user(
     user: UserCreateModel,
     number_id: int
 ) -> dict:
+    """
+    Tenemos el usuario editado y su id, de esta forma corregimos
+
+    Args:
+        user (UserCreateModel):
+            {
+            "name": str,
+            "username": str,
+            "password": str,
+            "access": bool
+            }
+        number_id (int): id del usuario a editar
+
+    Returns:
+        dict: {"data": {"message": }}
+            1. El usuario fue editado
+            2. Usuario no ha iniciado sesión
+            3. El usuario no puede hacer esta acción
+    """
     return edit_user_handler(user, number_id)
 
 
@@ -78,11 +110,37 @@ async def edit_user(
     tags=["user"],
     response_model=ResponseModel)
 async def delete_user(delete_id: int) -> dict:
+    """
+    Recibimos el numero id del usuario a eliminar
+
+    Args:
+        delete_id (int): id del usuario a eliminar
+
+    Returns:
+        dict: {"data": {"message": }}
+            1. El usuario fue borrado
+            2. Error
+            3. El usuario no puede hacer esta acción
+            4. Usuario no ha iniciado sesión
+    """
     return delete_user_handler(delete_id)
 
 
 @router.get("/show-user", tags=["user"], response_model=ResponseModel)
 async def show_user() -> dict:
+    """
+    Muestra todos los usuarios existentes en la base de datos
+
+    Returns:
+        dict: {"data": {"message": }}
+            {
+            "name": str,
+            "username": str,
+            "password": str,
+            "access": bool
+            }
+
+    """
     return show_user_handler()
 
 
@@ -90,6 +148,28 @@ async def show_user() -> dict:
 async def create_client(
         client: ClientCreateModel
                     ) -> dict:
+    """
+    Creacion de un cliente con sus datos
+
+    Args:
+        client (ClientCreateModel):
+            empresa: str
+            placa_empresa: str
+            placa: str
+            bimensual: date
+            soat: date
+            tecnomecanica: date
+            poliza: date
+            fecha_registro: date
+            aprobado: bool
+
+    Returns:
+        dict: {"data": {"message": }}
+            1. Usuario no ha iniciado sesión
+            2. El usuario no puede hacer esta acción
+            3. El cliente fue creado
+            4. Error
+    """
     return create_client_handler(client)
 
 
@@ -98,6 +178,29 @@ async def edit_client(
     client: ClientCreateModel,
     number_id: int
 ) -> dict:
+    """
+    Tenemos el cliente editado y su id, de esta forma corregimos al cliente
+
+    Args:
+        client (ClientCreateModel): 
+            empresa: str
+            placa_empresa: str
+            placa: str
+            bimensual: date
+            soat: date
+            tecnomecanica: date
+            poliza: date
+            fecha_registro: date
+            aprobado: bool
+        number_id (int): id del cliente a editar
+
+    Returns:
+        dict: {"data": {"message": }}
+            1. El usuario fue editado
+            2. Erorr
+            3. Usuario no ha iniciado sesión
+            4. El usuario no puede hacer esta acción
+    """
     return edit_client_handler(client, number_id)
 
 
@@ -106,11 +209,39 @@ async def edit_client(
     tags=["client"],
     response_model=ResponseModel)
 async def delete_client(delete_id: int) -> dict:
+    """
+    Recibimos el numero id del cliente a eliminar
+
+    Args:
+        delete_id (int): id del cliente a eliminar
+
+    Returns:
+        dict: {"data": {"message": }}
+            1. El cliente fue borrado
+            2. Error
+            3. El cliente no puede hacer esta acción
+            4. Usuario no ha iniciado sesión
+    """
     return delete_client_handler(delete_id)
 
 
 @router.get("/show-client", tags=["client"], response_model=ResponseModel)
 async def show_client() -> dict:
+    """
+    Muestra todos los clientes
+
+    Returns:
+        dict: {"data": {"message": }}
+            empresa: str
+            placa_empresa: str
+            placa: str
+            bimensual: date
+            soat: date
+            tecnomecanica: date
+            poliza: date
+            fecha_registro: date
+            aprobado: bool
+    """
     return show_client_handler()
 
 
@@ -120,6 +251,28 @@ async def create_upload_file(
     corrective_sheet: bytes = File(...),
     date_id_register: str = Form(...)
         ) -> dict:
+    """
+    recibimos los dos archivos a guardar y se organiza por empresa,
+    placa del vehiculo y fecha
+    Args:
+        preventive_review (bytes, optional): Imagen. Defaults to File(...).
+        corrective_sheet (bytes, optional): Imagen . Defaults to File(...).
+        date_id_register (str, optional):
+                1. empresa
+                2. placa del vehiculo
+                3. año, mes y día
+                separado por _ (raya al piso)
+                ejemplo: jelss_AAA753_2022_02_05
+            . Defaults to Form(...).
+
+    Returns:
+        dict: {"data": {"message": }}
+            1. Archivos subidos exitosamente
+            2. Error al subir los archivos
+            3. El cliente no puede hacer esta acción
+            4. Usuario no ha iniciado sesión
+
+    """
     return upload_file_handler(
         preventive_review,
         corrective_sheet,

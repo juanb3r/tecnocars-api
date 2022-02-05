@@ -57,7 +57,11 @@ class UserQuery():
             user (object): Datos del usuario, nombre, correo, contraseña
 
         Returns:
-            dict: Respuesta
+            dict: {"data": {"message": }}
+            1. El usuario fue creado
+            2. El usuario ya existe
+            3. Correo erroneo
+            4. Error
         """
         try:
             query_user = self.session.query(Users).filter_by(
