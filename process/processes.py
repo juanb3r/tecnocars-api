@@ -1,13 +1,17 @@
 from process.db_queries import UserQuery, ClientQuery
 from process.utils import SessionManager, hash_md5_util, create_path_util
+from process.constants import (
+    CURRENTLY_LOGGED,
+    FORBIDDEN,
+    LOGGED,
+    LOGGED_OUT,
+    NOT_LOGGED
+)
 
 
 user_query = UserQuery()
 client_query = ClientQuery()
 session_manager = SessionManager()
-
-start_message = "Usuario no ha iniciado sesión"
-message_access = "El usuario no puede hacer esta acción"
 
 
 def create_user_process(user):
@@ -28,13 +32,20 @@ def create_user_process(user):
             3. El usuario no puede hacer esta acción
     """
     if session_manager.value:
-        if session_manager.user.access:
+        if session_manager.user["access"]:
             user.password = hash_md5_util(user.password)
-            return user_query.new_user(user)
-        else:
-            return {"data": {"message": message_access}}
-    else:
-        return {"data": {"message": start_message}}
+            response = user_query.new_user(user)
+            return response
+        return {
+            "data": {},
+            "message": FORBIDDEN,
+            "status": 401
+        }
+    return {
+        "data": {},
+        "message": NOT_LOGGED,
+        "status": 401
+    }
 
 
 def user_login_process(user):
@@ -54,41 +65,76 @@ def user_login_process(user):
         session_login: dict = user_query.get_user_login(
             user.username, user.password
         )
-        session_manager.value = session_login["data"]["value"]
-        session_manager.user = session_login["data"]["user"]
-        return {"data": {"message": "Sesión iniciada"}}
-    else:
-        return {"data": {"message": "el usuario ya ha iniciado sesión"}}
+        if session_login["data"].get("error"):
+            return {
+                "data": session_login["data"],
+                "message": session_login["message"],
+                "status": 500
+            }
+        else:
+            session_manager.value = session_login["data"]["value"]
+            session_manager.user = session_login["data"]["user"]
+        return {
+            "data": session_manager.user,
+            "message": LOGGED,
+            "status": 200
+        }
+    return {
+            "data": session_manager.user,
+            "message": CURRENTLY_LOGGED,
+            "status": 200
+        }
 
 
 def edit_user_process(user, number_id):
     if session_manager.value:
-        if session_manager.user.access:
-            return user_query.edit_user(user, number_id)
-        else:
-            return {"data": {"message": message_access}}
-    else:
-        return {"data": {"message": start_message}}
+        if session_manager.user["access"]:
+            response = user_query.edit_user(user, number_id)
+            return response
+
+        return {
+            "data": {},
+            "message": FORBIDDEN,
+            "status": 401
+        }
+    return {
+        "data": {},
+        "message": NOT_LOGGED,
+        "status": 401
+    }
 
 
 def delete_user_process(delete_id):
     if session_manager.value:
-        if session_manager.user.access:
+        if session_manager.user["access"]:
             return user_query.delete_user(delete_id)
-        else:
-            return {"data": {"message": message_access}}
-    else:
-        return {"data": {"message": start_message}}
+        return {
+            "data": {},
+            "message": FORBIDDEN,
+            "status": 401
+        }
+    return {
+        "data": {},
+        "message": NOT_LOGGED,
+        "status": 401
+    }
 
 
 def show_user_process():
     if session_manager.value:
-        if session_manager.user.access:
-            return user_query.show_users()
-        else:
-            return {"data": {"message": message_access}}
-    else:
-        return {"data": {"message": start_message}}
+        if session_manager.user["access"]:
+            response = user_query.show_users()
+            return response
+        return {
+            "data": {},
+            "message": FORBIDDEN,
+            "status": 401
+        }
+    return {
+        "data": {},
+        "message": NOT_LOGGED,
+        "status": 401
+    }
 
 
 def create_client_process(client):
@@ -96,7 +142,7 @@ def create_client_process(client):
     Creacion de un cliente
 
     Args:
-        client (dict): 
+        client (dict):
             empresa: str
             placa_empresa: str
             placa: str
@@ -115,20 +161,27 @@ def create_client_process(client):
             4. Error
     """
     if session_manager.value:
-        if session_manager.user.access:
-            return client_query.new_client(client)
-        else:
-            return {"data": {"message": message_access}}
-    else:
-        return {"data": {"message": start_message}}
+        if session_manager.user["access"]:
+            response = client_query.new_client(client)
+            return response
+        return {
+            "data": {},
+            "message": FORBIDDEN,
+            "status": 401
+        }
+    return {
+        "data": {},
+        "message": NOT_LOGGED,
+        "status": 401
+    }
 
 
 def edit_client_process(client, number_id):
     """
-    Editamos el cliente con los parametros 
+    Editamos el cliente con los parametros
     Args:
-        client (dict): 
-        number_id (int): 
+        client (dict):
+        number_id (int):
     Returns:
         [type]: {"data": {"message": }}
             1. El usuario fue editado
@@ -138,32 +191,53 @@ def edit_client_process(client, number_id):
 
     """
     if session_manager.value:
-        if session_manager.user.access:
-            return client_query.edit_client(client, number_id)
-        else:
-            return {"data": {"message": message_access}}
-    else:
-        return {"data": {"message": start_message}}
+        if session_manager.user["access"]:
+            response = client_query.edit_client(client, number_id)
+            return response
+        return {
+            "data": {},
+            "message": LOGGED_OUT,
+            "status": 200
+        }
+    return {
+        "data": {},
+        "message": NOT_LOGGED,
+        "status": 401
+    }
 
 
 def delete_client_process(delete_id):
     if session_manager.value:
-        if session_manager.user.access:
-            return client_query.delete_client(delete_id)
-        else:
-            return {"data": {"message": message_access}}
-    else:
-        return {"data": {"message": start_message}}
+        if session_manager.user["access"]:
+            response = client_query.delete_client(delete_id)
+            return response
+        return {
+            "data": {},
+            "message": FORBIDDEN,
+            "status": 401
+        }
+    return {
+        "data": {},
+        "message": NOT_LOGGED,
+        "status": 401
+    }
 
 
 def show_client_process():
     if session_manager.value:
-        if session_manager.user.access:
-            return client_query.show_clients()
-        else:
-            return {"data": {"message": message_access}}
-    else:
-        return {"data": {"message": start_message}}
+        if session_manager.user["access"]:
+            response = client_query.show_clients()
+            return response
+        return {
+            "data": {},
+            "message": FORBIDDEN,
+            "status": 401
+        }
+    return {
+        "data": {},
+        "message": NOT_LOGGED,
+        "status": 401
+    }
 
 
 def user_close_session_process():
@@ -177,23 +251,44 @@ def user_close_session_process():
     if session_manager.value:
         session_manager.value = False
         session_manager.user = {}
-        return {"data": {"message": "Sesión cerrada"}}
-    else:
-        return {"data": {"message": start_message}}
+        return {
+            "data": {},
+            "message": LOGGED_OUT,
+            "status": 200
+        }
+    return {
+        "data": {},
+        "message": NOT_LOGGED,
+        "status": 401
+    }
 
 
 def upload_file_process(preventive_review, corrective_sheet, date_id_register):
     if session_manager.value:
-        if session_manager.user.access:
+        if session_manager.user["access"]:
             try:
                 create_path_util(
                     preventive_review, corrective_sheet, date_id_register)
                 client_query.edit_client_path_file(date_id_register)
-                return {"data": {"message": "Archivos subidos exitosamente"}}
+                return {
+                    "data": {},
+                    "message": "Archivos subidos exitosamente",
+                    "status": 200
+                }
 
             except Exception:
-                return {"data": {"message": "Error al subir los archivos"}}
-        else:
-            return {"data": {"message": message_access}}
-    else:
-        return {"data": {"message": start_message}}
+                return {
+                    "data": {},
+                    "message": "Error al subir los archivos",
+                    "status": 500
+                }
+        return {
+            "data": {},
+            "message": FORBIDDEN,
+            "status": 401
+        }
+    return {
+            "data": {},
+            "message": NOT_LOGGED,
+            "status": 401
+        }

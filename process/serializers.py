@@ -34,15 +34,18 @@ class UserCreateModel(BaseModel):
 
 class ResponseModel(BaseModel):
     data: dict
+    status: int
+    message: str
 
     class Config:
         schema_extra = {
             "example": {
-                "data": {"message": "Exitoso"}
+                "data": {"name": "Rafael"},
+                "status": 200,
+                "message": "Exitoso"
             }
         }
-#todo status code para todos, data y mensaje
-# https://developer.mozilla.org/es/docs/Web/HTTP/Status
+
 
 class ClientCreateModel(BaseModel):
     empresa: str

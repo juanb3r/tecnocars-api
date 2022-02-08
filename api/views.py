@@ -1,6 +1,7 @@
 import logging
 from fastapi import APIRouter
 from fastapi.params import File, Form
+from fastapi.responses import JSONResponse
 from process.handlers import create_user_handler, user_login_handler,\
     create_client_handler, upload_file_handler, edit_client_handler,\
     delete_client_handler, show_client_handler, user_closed_session_handler,\
@@ -40,7 +41,8 @@ async def login_user(user: UserLoginModel) -> dict:
             o 2) verificar datos, correo o clave erronea
 
     """
-    return user_login_handler(user)
+    response = user_login_handler(user)
+    return JSONResponse(content=response, status_code=response.get("status"))
 
 
 @router.post("/close-session", tags=["user"], response_model=ResponseModel)
@@ -53,7 +55,8 @@ async def close_session() -> dict:
         1. Sesión cerrada
         2. Usuario no ha iniciado sesión
     """
-    return user_closed_session_handler()
+    response = user_closed_session_handler()
+    return JSONResponse(content=response, status_code=response.get("status"))
 
 
 @router.post("/create-user", tags=["user"], response_model=ResponseModel)
@@ -75,7 +78,8 @@ async def create_user(user: UserCreateModel) -> dict:
             5. El usuario no puede hacer esta acción
             6. Error
     """
-    return create_user_handler(user)
+    response = create_user_handler(user)
+    return JSONResponse(content=response, status_code=response.get("status"))
 
 
 @router.put("/edit-user", tags=["user"], response_model=ResponseModel)
@@ -102,7 +106,8 @@ async def edit_user(
             2. Usuario no ha iniciado sesión
             3. El usuario no puede hacer esta acción
     """
-    return edit_user_handler(user, number_id)
+    response = edit_user_handler(user, number_id)
+    return JSONResponse(content=response, status_code=response.get("status"))
 
 
 @router.delete(
@@ -141,7 +146,8 @@ async def show_user() -> dict:
             }
 
     """
-    return show_user_handler()
+    response = show_user_handler()
+    return JSONResponse(content=response, status_code=response.get("status"))
 
 
 @router.post("/create-client", tags=["client"], response_model=ResponseModel)
@@ -170,7 +176,8 @@ async def create_client(
             3. El cliente fue creado
             4. Error
     """
-    return create_client_handler(client)
+    response = create_client_handler(client)
+    return JSONResponse(content=response, status_code=response.get("status"))
 
 
 @router.put("/edit-client", tags=["client"], response_model=ResponseModel)
@@ -182,7 +189,7 @@ async def edit_client(
     Tenemos el cliente editado y su id, de esta forma corregimos al cliente
 
     Args:
-        client (ClientCreateModel): 
+        client (ClientCreateModel):
             empresa: str
             placa_empresa: str
             placa: str
@@ -201,7 +208,8 @@ async def edit_client(
             3. Usuario no ha iniciado sesión
             4. El usuario no puede hacer esta acción
     """
-    return edit_client_handler(client, number_id)
+    response = edit_client_handler(client, number_id)
+    return JSONResponse(content=response, status_code=response.get("status"))
 
 
 @router.delete(
@@ -222,7 +230,8 @@ async def delete_client(delete_id: int) -> dict:
             3. El cliente no puede hacer esta acción
             4. Usuario no ha iniciado sesión
     """
-    return delete_client_handler(delete_id)
+    response = delete_client_handler(delete_id)
+    return JSONResponse(content=response, status_code=response.get("status"))
 
 
 @router.get("/show-client", tags=["client"], response_model=ResponseModel)
@@ -242,7 +251,8 @@ async def show_client() -> dict:
             fecha_registro: date
             aprobado: bool
     """
-    return show_client_handler()
+    response = show_client_handler()
+    return JSONResponse(content=response, status_code=response.get("status"))
 
 
 @router.post("/create-upload", tags=["upload"], response_model=ResponseModel)
@@ -252,7 +262,7 @@ async def create_upload_file(
     date_id_register: str = Form(...)
         ) -> dict:
     """
-    recibimos los dos archivos a guardar y se organiza por empresa,
+    Recibimos los dos archivos a guardar y se organiza por empresa,
     placa del vehiculo y fecha
     Args:
         preventive_review (bytes, optional): Imagen. Defaults to File(...).
@@ -273,7 +283,8 @@ async def create_upload_file(
             4. Usuario no ha iniciado sesión
 
     """
-    return upload_file_handler(
+    response = upload_file_handler(
         preventive_review,
         corrective_sheet,
         date_id_register)
+    return JSONResponse(content=response, status_code=response.get("status"))

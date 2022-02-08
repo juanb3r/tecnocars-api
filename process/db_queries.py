@@ -13,7 +13,14 @@ class Session():
         user = self.session.query(Users).filter_by(
                     username=username,
                     password=password).one()
-        session_login: dict = {"user": user, "value": True}
+        session_login: dict = {
+            "user": {
+                "id": user.id,
+                "name": user.name,
+                "username": user.username,
+                "access": user.access
+            },
+            "value": True}
         return session_login
 
 
@@ -23,11 +30,28 @@ class UserQuery():
         self.session = session
 
     def show_users(self) -> dict:
+        users_show = []
         try:
             users = self.session.query(Users).all()
-            return {"data": {"users": users}}
+            for user in users:
+                users_show.append({
+                        "id": user.id,
+                        "name": user.name,
+                        "username": user.username,
+                        "access": user.access
+                        }
+                    )
+            return {
+                "data": users_show,
+                "message": "Consultas de los usuarios existentes.",
+                "status": 200
+            }
         except Exception as error:
-            return {"data": {"error": error}}
+            return {
+                "data": {"error": f"{error}"},
+                "message": "Hubo un error en la consulta de la base de datos",
+                "status": 500
+            }
 
     def get_user_login(self, username: str, password: str) -> dict:
         """
@@ -44,10 +68,18 @@ class UserQuery():
             session_login = Session().login_session(username, password)
         except Exception:
             self.session.rollback()
-            return {"data": {"message": "Verifique los datos"}}
+            return {
+                "data": {"error": True},
+                "message": "Verifique los datos, los datos son erróneos",
+                "status": 204
+            }
         finally:
             self.session.close()
-        return {"data": session_login}
+        return {
+            "data": session_login,
+            "message": "Verifique los datos",
+            "status": 200
+        }
 
     def new_user(self, user: object) -> dict:
         """
@@ -76,18 +108,34 @@ class UserQuery():
                 self.session.add(new_user)
                 self.session.commit()
                 self.session.close()
-                return {"data": {"message": "El usuario fue creado"}}
+                return {
+                    "data": {},
+                    "message": "El usuario fue creado",
+                    "status": 200
+                }
             elif(query_user >= 1):
                 self.session.close()
-                return {"data": {"message": "El usuario ya existe"}}
+                return {
+                    "data": {},
+                    "message": "El usuario ya existe",
+                    "status": 409
+                }
             else:
                 self.session.close()
-                return {"data": {"message": "Correo erroneo"}}
+                return {
+                    "data": {},
+                    "message": "Correo erroneo",
+                    "status": 400
+                }
 
         except Exception as error:
             self.session.rollback()
             self.session.close()
-            return {"data": {"Error": error}}
+            return {
+                "data": {"error": f"{error}"},
+                "message": "Hubo un error con la base de datos",
+                "status": 500
+            }
 
     def edit_user(self, user: object, number_id) -> dict:
         try:
@@ -101,11 +149,24 @@ class UserQuery():
             self.session.add(edit_user)
             self.session.commit()
             self.session.close()
-            return {"data": {"message": "El usuario fue editado"}}
+            return {
+                "data": {
+                    "id": number_id,
+                    "name": user.name,
+                    "username": user.username,
+                    "access": user.access
+                },
+                "message": "El usuario fue editado",
+                "status": 200
+            }
         except Exception as error:
             self.session.rollback()
             self.session.close()
-            return {"data": {"erorr": f"{error}"}}
+            return {
+                "data": {"erorr": f"{error}"},
+                "message": "Hubo un error al consultar la base de datos",
+                "status": 500
+            }
 
     def delete_user(self, number_id) -> dict:
         try:
@@ -114,12 +175,19 @@ class UserQuery():
             self.session.delete(delete_user)
             self.session.commit()
             self.session.close()
-            return {"data": {"message": "El usuario fue borrado"}}
+            return {
+                "data": {},
+                "message": "El usuario fue borrado",
+                "status": 200
+            }
         except Exception as error:
             self.session.rollback()
             self.session.close()
-            return {"data": {"erorr": f"{error}"}}
-
+            return {
+                "data": {"erorr": f"{error}"},
+                "message": "Hubo un error",
+                "status": 500
+            }
 
 
 class ClientQuery():
@@ -129,10 +197,28 @@ class ClientQuery():
 
     def show_clients(self) -> dict:
         try:
+            client_show = []
             clients = self.session.query(Client).all()
-            return {"data": {"clients": clients}}
+            for client in clients:
+                client_show.append({
+                    "id": client.id,
+                    "id_register": client.id_register,
+                    "placa_empresa": client.placa_empresa,
+                    "placa": client.placa,
+                    "aprobado": client.aprobado
+                }
+                )
+            return {
+                "data": client_show,
+                "message": "Todos los clientes",
+                "status": 200
+            }
         except Exception as error:
-            return {"data": {"erorr": f"{error}"}}
+            return {
+                "data": {"erorr": f"{error}"},
+                "message": "Hubo un error al consultar el cliente",
+                "status": 500
+            }
 
     def new_client(self, client: object) -> dict:
         time_now = datetime.now()
@@ -147,15 +233,21 @@ class ClientQuery():
             self.session.add(new_client)
             self.session.commit()
             self.session.close()
-            return {"data": {
-                    "message": "El cliente fue creado",
-                    "id_register": identify_unique
-                    }}
+            return {
+                "data": {},
+                "message": "El cliente fue creado",
+                "id_register": identify_unique,
+                "status": 200
+            }
 
         except Exception as error:
             self.session.rollback()
             self.session.close()
-            return {"data": {"erorr": f"{error}"}}
+            return {
+                "data": {"erorr": f"{error}"},
+                "message": "Hubo un error en la consulta de la base de datos",
+                "status": 500
+            }
 
     def edit_client_path_file(
             self,
@@ -175,12 +267,20 @@ class ClientQuery():
             self.session.add(client)
             self.session.commit()
             self.session.close()
-            return {"data": {"message": "Archivos subidos correctamente"}}
+            return {
+                "data": {},
+                "message": "Archivos subidos correctamente",
+                "status": 200
+            }
 
         except Exception as error:
             self.session.rollback()
             self.session.close()
-            return {"data": {"erorr": f"{error}"}}
+            return {
+                "data": {"erorr": f"{error}"},
+                "message": "Hubo un error al consultar la base de datos",
+                "status": 500
+            }
 
     def edit_client(self, client: object, number_id) -> dict:
 
@@ -199,21 +299,40 @@ class ClientQuery():
             self.session.add(edit_client)
             self.session.commit()
             self.session.close()
-            return {"data": {"message": "El usuario fue editado"}}
+            return {
+                "data": client.placa,
+                "message": "El usuario fue editado",
+                "status": 200
+            }
 
         except Exception as error:
             self.session.rollback()
             self.session.close()
-            return {"data": {"erorr": f"{error}"}}
+            return {
+                "data": {"erorr": f"{error}"},
+                "message": "Hubo un error en la consulta de los datos",
+                "status": 500
+            }
 
     def delete_client(self, delete_id) -> dict:
-        client: Client = self.session.query(Client).filter_by(
-                id=delete_id).one()
-        response_delete_file = delete_client_util(client)
-        if response_delete_file:
-            self.session.delete(client)
-            self.session.commit()
+        try:
+            client: Client = self.session.query(Client).filter_by(
+                    id=delete_id).one()
+            response_delete_file = delete_client_util(client)
+            if response_delete_file:
+                self.session.delete(client)
+                self.session.commit()
+                self.session.close()
+                return {
+                    "data": delete_id,
+                    "message": "El usuario fue borrado",
+                    "status": 200
+                }
+        except Exception as error:
+            self.session.rollback()
             self.session.close()
-            return {"data": {"message": "El usuario fue borrado"}}
-        else:
-            return {"data": {"message": "El usuario no fue borrado"}}
+            return {
+                "data": {"erorr": f"{error}"},
+                "message": "El usuario no fue borrado",
+                "status": 500
+            }
