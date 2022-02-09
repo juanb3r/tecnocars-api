@@ -220,6 +220,31 @@ class ClientQuery():
                 "status": 500
             }
 
+    def show_client(self, name) -> dict:
+        try:
+            client_show = []
+            clients = self.session.query(Client).filter_by(empresa=name).all()
+            for client in clients:
+                client_show.append({
+                    "id": client.id,
+                    "id_register": client.id_register,
+                    "placa_empresa": client.placa_empresa,
+                    "placa": client.placa,
+                    "aprobado": client.aprobado
+                }
+                )
+            return {
+                "data": client_show,
+                "message": "Todos los clientes",
+                "status": 200
+            }
+        except Exception as error:
+            return {
+                "data": {"erorr": f"{error}"},
+                "message": "Hubo un error al consultar el cliente",
+                "status": 500
+            }
+
     def new_client(self, client: object) -> dict:
         time_now = datetime.now()
         time_path = f"{time_now.year}_{time_now.month}_{time_now.day}"

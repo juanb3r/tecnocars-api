@@ -228,11 +228,13 @@ def show_client_process():
         if session_manager.user["access"]:
             response = client_query.show_clients()
             return response
-        return {
-            "data": {},
-            "message": FORBIDDEN,
-            "status": 401
-        }
+        response = client_query.show_client(session_manager.user["name"])
+        return response
+        # return {
+        #     "data": {},
+        #     "message": FORBIDDEN,
+        #     "status": 401
+        # }
     return {
         "data": {},
         "message": NOT_LOGGED,

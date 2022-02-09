@@ -26,7 +26,7 @@ async def root() -> dict:
     return {"message": "Hello World"}
 
 
-@router.post("/user", tags=["user"], response_model=ResponseModel)
+@router.post("/user", tags=["session"], response_model=ResponseModel)
 async def login_user(user: UserLoginModel) -> dict:
     """
     El usuario debe loguearse en la app,
@@ -45,7 +45,7 @@ async def login_user(user: UserLoginModel) -> dict:
     return JSONResponse(content=response, status_code=response.get("status"))
 
 
-@router.post("/close-session", tags=["user"], response_model=ResponseModel)
+@router.post("/close-session", tags=["session"], response_model=ResponseModel)
 async def close_session() -> dict:
     """
     Cerramos la sesión del usuario
