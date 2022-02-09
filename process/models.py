@@ -1,3 +1,4 @@
+import os
 from sqlalchemy import Boolean, Column,\
     Integer, String, Date
 from sqlalchemy.ext.declarative import declarative_base
@@ -35,5 +36,6 @@ class Client(Base):
     aprobado = Column(Boolean, default=False)
 
 
-engine = create_engine("sqlite:///tecnocars.db")
+path_sqlite = os.getenv("path")
+engine = create_engine(path_sqlite)
 Base.metadata.create_all(engine)
