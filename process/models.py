@@ -36,6 +36,6 @@ class Client(Base):
     aprobado = Column(Boolean, default=False)
 
 
-path_sqlite = os.getenv("path")
+path_sqlite = os.getenv("PATH")
 engine = create_engine(path_sqlite)
 Base.metadata.create_all(engine)

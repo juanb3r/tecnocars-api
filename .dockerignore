@@ -1,0 +1,5 @@
+.vscode/
+.scannerwork/
+venv/
+.gitignore
+.dockerignore

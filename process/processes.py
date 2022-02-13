@@ -230,11 +230,6 @@ def show_client_process():
             return response
         response = client_query.show_client(session_manager.user["name"])
         return response
-        # return {
-        #     "data": {},
-        #     "message": FORBIDDEN,
-        #     "status": 401
-        # }
     return {
         "data": {},
         "message": NOT_LOGGED,
